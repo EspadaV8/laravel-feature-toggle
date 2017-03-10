@@ -76,12 +76,12 @@ class FeatureFlag
     private function findEnvironmentSettingOrUseDefault(): self
     {
         $setting = config("feature-flags.{$this->getFeatureId()}.environments.{$this->environment}");
-        if (null !== $setting) {
-            $this->setEnabled($setting);
-        } else {
+
+        if (null === $setting) {
             $setting = config("feature-flags.{$this->getFeatureId()}.environments.default");
-            $this->setEnabled($setting);
         }
+
+        $this->setEnabled($setting);
 
         return $this;
     }
