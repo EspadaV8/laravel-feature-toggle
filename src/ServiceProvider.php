@@ -36,16 +36,6 @@ class ServiceProvider extends LaravelServiceProvider
         });
     }
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
-    }
-
     private function handleConfigs()
     {
         $configPath = __DIR__ . '/../config/feature-flags.php';
