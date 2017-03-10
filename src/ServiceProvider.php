@@ -29,7 +29,7 @@ class ServiceProvider extends LaravelServiceProvider {
      */
     public function register() {
 
-        App::bind('featureflag', function()
+        $this->app->bind('featureflag', function()
         {
             return new FeatureFlag();
         });
