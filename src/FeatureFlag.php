@@ -7,13 +7,13 @@ use Illuminate\Support\Collection;
 
 class FeatureFlag
 {
-    protected $feature_id;
+    protected $featureId;
     protected $environment;
     protected $enabled = false;
 
-    public function isEnabled($feature_id)
+    public function isEnabled($featureId)
     {
-        $this->setFeatureId($feature_id);
+        $this->setFeatureId($featureId);
         $this->findEnvironmentSettingOrUseDefault();
         $this->takeExceptionIfNoSettingIsFound();
 
@@ -101,14 +101,14 @@ class FeatureFlag
      */
     public function getFeatureId()
     {
-        return $this->feature_id;
+        return $this->featureId;
     }
 
     /**
-     * @param mixed $feature_id
+     * @param mixed $featureId
      */
-    public function setFeatureId($feature_id)
+    public function setFeatureId($featureId)
     {
-        $this->feature_id = $feature_id;
+        $this->featureId = $featureId;
     }
 }
