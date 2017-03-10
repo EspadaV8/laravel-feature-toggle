@@ -1,7 +1,7 @@
 <?php
+declare(strict_types=1);
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Feature Flags
@@ -11,30 +11,28 @@ return [
     | include environment specific (e.g. dev, stage, production) settings.
     |
     */
-
     'feature-1' => [
         'environments' => [
-            'default'  => false,
-            'local'    => true,
-            'dev'      => false,
-            'stage'    => false
+            'default' => false,
+            'local' => true,
+            'dev' => false,
+            'stage' => false,
         ],
-        'js_export'    => true,
+        'js_export' => true,
     ],
 
     'feature-2' => [
-        'environments'   => [
-            'default'    => false,
+        'environments' => [
+            'default' => false,
             'production' => true,
         ],
-        'js_export'      => true,
+        'js_export' => true,
     ],
 
     'feature-3' => [
         'environments' => [
-            'default'  => false,
-            'production'    => true,
+            'default' => false,
+            'production' => true,
         ],
     ],
-
 ];

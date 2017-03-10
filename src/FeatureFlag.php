@@ -1,12 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Kirschbaum\LaravelFeatureFlag;
 
-
 use Illuminate\Support\Collection;
 
-class FeatureFlag {
-
+class FeatureFlag
+{
     protected $feature_id;
     protected $environment;
     protected $enabled = false;
@@ -16,17 +16,17 @@ class FeatureFlag {
         $this->setFeatureId($feature_id);
         $this->findEnvironmentSettingOrUseDefault();
         $this->takeExceptionIfNoSettingIsFound();
+
         return $this->getEnabled();
     }
 
     public function getJavascriptFlags()
     {
-        $settings = new Collection(config("feature-flags"));
+        $settings = new Collection(config('feature-flags'));
         $settings = $settings->where('js_export', true);
 
         $results = [];
-        foreach($settings as $key => $setting)
-        {
+        foreach ($settings as $key => $setting) {
             $results[$key] = $this->isEnabled($key);
         }
 
@@ -36,8 +36,7 @@ class FeatureFlag {
     private function findEnvironmentSettingOrUseDefault()
     {
         $setting = config("feature-flags.{$this->getFeatureId()}.environments.{$this->getEnvironment()}");
-        if(null !== $setting)
-        {
+        if (null !== $setting) {
             $this->setEnabled($setting);
         } else {
             $setting = config("feature-flags.{$this->getFeatureId()}.environments.default");
@@ -47,13 +46,14 @@ class FeatureFlag {
 
     private function takeExceptionIfNoSettingIsFound()
     {
-        if(null === $this->getEnabled())
+        if (null === $this->getEnabled()) {
             throw new \Exception(
                 sprintf(
-                    "FeatureFlag: Cannot find a setting for the feature ID %s",
+                    'FeatureFlag: Cannot find a setting for the feature ID %s',
                     $this->getFeatureId()
                 )
             );
+        }
     }
 
     /**
@@ -77,8 +77,9 @@ class FeatureFlag {
      */
     public function getEnvironment()
     {
-        if(null == $this->environment)
+        if (null === $this->environment) {
             $this->setEnvironment();
+        }
 
         return $this->environment;
     }
@@ -88,8 +89,9 @@ class FeatureFlag {
      */
     public function setEnvironment($environment = null)
     {
-        if(null == $environment)
+        if (null === $environment) {
             $environment = app()->environment();
+        }
 
         $this->environment = $environment;
     }
@@ -109,5 +111,4 @@ class FeatureFlag {
     {
         $this->feature_id = $feature_id;
     }
-
 }

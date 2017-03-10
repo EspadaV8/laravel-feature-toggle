@@ -1,9 +1,12 @@
-<?php namespace Kirschbaum\LaravelFeatureFlag;
+<?php
+declare(strict_types=1);
+
+namespace Kirschbaum\LaravelFeatureFlag;
 
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
-class ServiceProvider extends LaravelServiceProvider {
-
+class ServiceProvider extends LaravelServiceProvider
+{
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -16,10 +19,9 @@ class ServiceProvider extends LaravelServiceProvider {
      *
      * @return void
      */
-    public function boot() {
-
+    public function boot()
+    {
         $this->handleConfigs();
-
     }
 
     /**
@@ -27,13 +29,11 @@ class ServiceProvider extends LaravelServiceProvider {
      *
      * @return void
      */
-    public function register() {
-
-        $this->app->bind('featureflag', function()
-        {
+    public function register()
+    {
+        $this->app->bind('featureflag', function () {
             return new FeatureFlag();
         });
-
     }
 
     /**
@@ -41,18 +41,17 @@ class ServiceProvider extends LaravelServiceProvider {
      *
      * @return array
      */
-    public function provides() {
-
+    public function provides()
+    {
         return [];
     }
 
-    private function handleConfigs() {
-
+    private function handleConfigs()
+    {
         $configPath = __DIR__ . '/../config/feature-flags.php';
 
         $this->publishes([$configPath => config_path('feature-flags.php')]);
 
         $this->mergeConfigFrom($configPath, 'feature-flags');
     }
-
 }
