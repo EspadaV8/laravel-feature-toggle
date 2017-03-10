@@ -14,14 +14,8 @@ class ServiceProvider extends LaravelServiceProvider
      */
     protected $defer = false;
 
-    /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
     public function boot()
     {
-        $this->handleConfigs();
     }
 
     /**
@@ -31,17 +25,13 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function register()
     {
-        $this->app->bind('featureflag', function () {
-            return new FeatureFlag($this->app->environment());
+        $config = require config_path('feature-flags.php');
+
+        $this->app->bind('featureflag', function () use ($config) {
+            return new FeatureFlag(
+                $this->app->environment(),
+                $config
+            );
         });
-    }
-
-    private function handleConfigs()
-    {
-        $configPath = __DIR__ . '/../config/feature-flags.php';
-
-        $this->publishes([$configPath => config_path('feature-flags.php')]);
-
-        $this->mergeConfigFrom($configPath, 'feature-flags');
     }
 }
