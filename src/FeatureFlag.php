@@ -29,8 +29,9 @@ class FeatureFlag
 
     public function isEnabled(string $featureId): bool
     {
+        $this->featureId = $featureId;
+
         return $this
-            ->setFeatureId($featureId)
             ->findEnvironmentSettingOrUseDefault()
             ->takeExceptionIfNoSettingIsFound()
             ->getEnabled();
@@ -61,24 +62,12 @@ class FeatureFlag
         return $this;
     }
 
-    public function getFeatureId(): string
-    {
-        return $this->featureId;
-    }
-
-    public function setFeatureId(string $featureId): self
-    {
-        $this->featureId = $featureId;
-
-        return $this;
-    }
-
     private function findEnvironmentSettingOrUseDefault(): self
     {
-        $setting = config("feature-flags.{$this->getFeatureId()}.environments.{$this->environment}");
+        $setting = config("feature-flags.{$this->featureId}.environments.{$this->environment}");
 
         if (null === $setting) {
-            $setting = config("feature-flags.{$this->getFeatureId()}.environments.default");
+            $setting = config("feature-flags.{$this->featureId}.environments.default");
         }
 
         $this->setEnabled($setting);
@@ -92,7 +81,7 @@ class FeatureFlag
             throw new \Exception(
                 sprintf(
                     'FeatureFlag: Cannot find a setting for the feature ID %s',
-                    $this->getFeatureId()
+                    $this->featureId
                 )
             );
         }
