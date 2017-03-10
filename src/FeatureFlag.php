@@ -22,6 +22,11 @@ class FeatureFlag
      */
     protected $enabled = false;
 
+    public function __construct(string $environment)
+    {
+        $this->environment = $environment;
+    }
+
     public function isEnabled(string $featureId): bool
     {
         return $this
@@ -56,26 +61,6 @@ class FeatureFlag
         return $this;
     }
 
-    public function getEnvironment(): string
-    {
-        if (null === $this->environment) {
-            $this->setEnvironment();
-        }
-
-        return $this->environment;
-    }
-
-    public function setEnvironment(string $environment = null): self
-    {
-        if (null === $environment) {
-            $environment = app()->environment();
-        }
-
-        $this->environment = $environment;
-
-        return $this;
-    }
-
     public function getFeatureId(): string
     {
         return $this->featureId;
@@ -90,7 +75,7 @@ class FeatureFlag
 
     private function findEnvironmentSettingOrUseDefault(): self
     {
-        $setting = config("feature-flags.{$this->getFeatureId()}.environments.{$this->getEnvironment()}");
+        $setting = config("feature-flags.{$this->getFeatureId()}.environments.{$this->environment}");
         if (null !== $setting) {
             $this->setEnabled($setting);
         } else {
