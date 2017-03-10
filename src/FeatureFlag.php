@@ -7,20 +7,31 @@ use Illuminate\Support\Collection;
 
 class FeatureFlag
 {
+    /**
+     * @var string
+     */
     protected $featureId;
+
+    /**
+     * @var string
+     */
     protected $environment;
+
+    /**
+     * @var bool
+     */
     protected $enabled = false;
 
-    public function isEnabled($featureId)
+    public function isEnabled(string $featureId): bool
     {
-        $this->setFeatureId($featureId);
-        $this->findEnvironmentSettingOrUseDefault();
-        $this->takeExceptionIfNoSettingIsFound();
-
-        return $this->getEnabled();
+        return $this
+            ->setFeatureId($featureId)
+            ->findEnvironmentSettingOrUseDefault()
+            ->takeExceptionIfNoSettingIsFound()
+            ->getEnabled();
     }
 
-    public function getJavascriptFlags()
+    public function getJavascriptFlags(): array
     {
         $settings = new Collection(config('feature-flags'));
         $settings = $settings->where('js_export', true);
@@ -33,7 +44,51 @@ class FeatureFlag
         return $results;
     }
 
-    private function findEnvironmentSettingOrUseDefault()
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getEnvironment(): string
+    {
+        if (null === $this->environment) {
+            $this->setEnvironment();
+        }
+
+        return $this->environment;
+    }
+
+    public function setEnvironment(string $environment = null): self
+    {
+        if (null === $environment) {
+            $environment = app()->environment();
+        }
+
+        $this->environment = $environment;
+
+        return $this;
+    }
+
+    public function getFeatureId(): string
+    {
+        return $this->featureId;
+    }
+
+    public function setFeatureId(string $featureId): self
+    {
+        $this->featureId = $featureId;
+
+        return $this;
+    }
+
+    private function findEnvironmentSettingOrUseDefault(): self
     {
         $setting = config("feature-flags.{$this->getFeatureId()}.environments.{$this->getEnvironment()}");
         if (null !== $setting) {
@@ -42,9 +97,11 @@ class FeatureFlag
             $setting = config("feature-flags.{$this->getFeatureId()}.environments.default");
             $this->setEnabled($setting);
         }
+
+        return $this;
     }
 
-    private function takeExceptionIfNoSettingIsFound()
+    private function takeExceptionIfNoSettingIsFound(): self
     {
         if (null === $this->getEnabled()) {
             throw new \Exception(
@@ -54,61 +111,7 @@ class FeatureFlag
                 )
             );
         }
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @param mixed $enabled
-     */
-    public function setEnabled($enabled)
-    {
-        $this->enabled = $enabled;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEnvironment()
-    {
-        if (null === $this->environment) {
-            $this->setEnvironment();
-        }
-
-        return $this->environment;
-    }
-
-    /**
-     * @param mixed $environment
-     */
-    public function setEnvironment($environment = null)
-    {
-        if (null === $environment) {
-            $environment = app()->environment();
-        }
-
-        $this->environment = $environment;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFeatureId()
-    {
-        return $this->featureId;
-    }
-
-    /**
-     * @param mixed $featureId
-     */
-    public function setFeatureId($featureId)
-    {
-        $this->featureId = $featureId;
+        return $this;
     }
 }
