@@ -7,14 +7,14 @@ This package allows for easy and efficient feature flag managment in Laravel. Fe
 * Creation of a default setting per feature that will be used if the environment specific setting is not found.
 * Ability to easily request the status of a feature and automatically get the correct setting based on the current environment the application is running on.
 * Ability to tag features as eligable for Javascript export.
-* A helper method to easily export Javascript eligable feature flags and pass them along to your front-end framework. 
+* A helper method to easily export Javascript eligable feature flags and pass them along to your front-end framework.
 
 ## Installation
 
 Add the package to your project:
 
 ```
-composer require kirschbaum/laravel-feature-flag
+composer require kirschbaum/laravel-feature-toggle
 ```
 
 Add the following service provider:
