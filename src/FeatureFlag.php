@@ -25,7 +25,7 @@ class FeatureFlag
     public function isEnabled(string $featureId): bool
     {
         if (array_key_exists($featureId, $this->flags)) {
-            return $this->flags[$featureId];
+            return $this->flags[$featureId]['is_enabled'];
         }
 
         throw new \Exception(

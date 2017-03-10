@@ -17,11 +17,16 @@
     "laravel/framework": "~5.1"
   },
   "require-dev": {
-    "phpunit/phpunit": "~4.0"
+    "phpunit/phpunit": "~6.0"
   },
   "autoload": {
     "psr-4": {
       "Kirschbaum\\LaravelFeatureFlag\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Kirschbaum\\Tests\\LaravelFeatureFlag\\": "tests/"
     }
   },
   "minimum-stability": "dev",
