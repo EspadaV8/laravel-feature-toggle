@@ -3,89 +3,93 @@ declare(strict_types=1);
 
 namespace Kirschbaum\LaravelFeatureFlag;
 
-use Illuminate\Support\Collection;
-
 class FeatureFlag
 {
-    /**
-     * @var string
-     */
-    protected $featureId;
-
     /**
      * @var string
      */
     protected $environment;
 
     /**
-     * @var bool
+     * @var array
      */
-    protected $enabled = false;
+    protected $flags;
 
-    public function __construct(string $environment)
+    public function __construct(string $environment, array $config = [])
     {
         $this->environment = $environment;
+
+        $this->processConfig($config);
     }
 
     public function isEnabled(string $featureId): bool
     {
-        $this->featureId = $featureId;
+        if (array_key_exists($featureId, $this->flags)) {
+            return $this->flags[$featureId];
+        }
 
-        return $this
-            ->findEnvironmentSettingOrUseDefault()
-            ->takeExceptionIfNoSettingIsFound()
-            ->getEnabled();
+        throw new \Exception(
+            sprintf(
+                'FeatureFlag: Cannot find a setting for the feature ID %s',
+                $featureId
+            )
+        );
     }
 
     public function getJavascriptFlags(): array
     {
-        $settings = new Collection(config('feature-flags'));
-        $settings = $settings->where('js_export', true);
-
         $results = [];
-        foreach ($settings as $key => $setting) {
-            $results[$key] = $this->isEnabled($key);
+
+        foreach ($this->flags as $key => $settings) {
+            if ($settings['js_export'] === true) {
+                $results[$key] = $settings['is_enabled'];
+            }
         }
 
         return $results;
     }
 
-    public function getEnabled(): bool
+    private function processConfig(array $config)
     {
-        return $this->enabled;
-    }
+        $this->flags = [];
 
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
+        foreach ($config as $key => $settings) {
+            $isEnabled = $this->getEnabledForKey($key, $settings);
 
-        return $this;
-    }
-
-    private function findEnvironmentSettingOrUseDefault(): self
-    {
-        $setting = config("feature-flags.{$this->featureId}.environments.{$this->environment}");
-
-        if (null === $setting) {
-            $setting = config("feature-flags.{$this->featureId}.environments.default");
+            $this->flags[$key] = [
+                'is_enabled' => $isEnabled,
+                'js_export' => $settings['js_export'] ?? false,
+            ];
         }
 
-        $this->setEnabled($setting);
-
         return $this;
     }
 
-    private function takeExceptionIfNoSettingIsFound(): self
+    /**
+     * @param string $key
+     * @param array $settings
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    private function getEnabledForKey(string $key, array $settings): bool
     {
-        if (null === $this->getEnabled()) {
+        $environments = $settings['environments'];
+
+        if (array_key_exists('default', $environments) === false) {
             throw new \Exception(
                 sprintf(
-                    'FeatureFlag: Cannot find a setting for the feature ID %s',
-                    $this->featureId
+                    'FeatureFlag: Cannot find default setting for feature ID - %s',
+                    $key
                 )
             );
         }
 
-        return $this;
+        if (array_key_exists($this->environment, $environments)) {
+            return (bool) $environments[$this->environment];
+        }
+
+        return (bool) $environments['default'];
     }
 }
