@@ -11,6 +11,7 @@ return [
     | include environment specific (e.g. dev, stage, production) settings.
     |
     */
+    /*
     'feature-1' => [
         'environments' => [
             'default' => false,
@@ -35,4 +36,5 @@ return [
             'production' => true,
         ],
     ],
+     */
 ];
